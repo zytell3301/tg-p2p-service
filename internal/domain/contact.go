@@ -3,11 +3,11 @@ package domain
 import "github.com/google/uuid"
 
 type ContactSides struct {
-	LeftSide  uuid.UUID
-	RightSide uuid.UUID
+	LeftSide  *uuid.UUID
+	RightSide *uuid.UUID
 }
 
 type Contact struct {
-	ContactId    uuid.UUID
+	ContactId    *uuid.UUID
 	ContactSides ContactSides
 }

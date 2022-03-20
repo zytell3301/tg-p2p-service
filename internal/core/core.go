@@ -5,6 +5,7 @@ import (
 	"github.com/zytell3301/tg-globals/errors"
 	uuid_generator "github.com/zytell3301/uuid-generator"
 	"tg-p2p-service/internal/domain"
+	"time"
 )
 
 type Service struct {
@@ -51,4 +52,15 @@ func (s Service) GetContacts(userId uuid.UUID) ([]domain.Contact, error) {
 		return []domain.Contact{}, errors.InternalError{}
 	}
 	return contacts, nil
+}
+
+func (s Service) SendMessage(message domain.Message) error {
+	message.SentAt = time.Now()
+	err := s.repository.RecordMessage(message)
+	switch err != nil {
+	case true:
+		return errors.InternalError{}
+	}
+
+	return nil
 }

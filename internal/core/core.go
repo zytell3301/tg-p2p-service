@@ -40,16 +40,7 @@ func (s Service) NewContact(contact domain.Contact) error {
 	case true:
 		return errors.InternalError{}
 	}
-	/*
-	 * We flip the contact sides and again insert it into database.
-	 */
-	err = s.repository.NewContact(domain.Contact{
-		ContactId: id,
-		ContactSides: domain.ContactSides{
-			LeftSide:  contact.ContactSides.RightSide,
-			RightSide: contact.ContactSides.LeftSide,
-		},
-	})
+
 	return nil
 }
 

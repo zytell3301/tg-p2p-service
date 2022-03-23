@@ -15,4 +15,6 @@ type Repository interface {
 
 	// Since we can't trust to user provided information, must fetch the message again from database
 	GetMessage(message domain.Message) (domain.Message, error)
+
+	OneWayMessageDelete(message domain.Message)
 }

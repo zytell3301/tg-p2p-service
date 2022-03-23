@@ -64,3 +64,13 @@ func (s Service) SendMessage(message domain.Message) error {
 
 	return nil
 }
+
+func (s Service) GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, contactId uuid.UUID) ([]domain.Message, error) {
+	messages, err := s.repository.GetMessages(from, to, leftSide, contactId)
+	switch err != nil {
+	case true:
+		return []domain.Message{}, errors.InternalError{}
+	}
+
+	return messages, nil
+}

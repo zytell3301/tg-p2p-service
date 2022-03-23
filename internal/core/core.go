@@ -51,6 +51,7 @@ func (s Service) GetContacts(userId uuid.UUID) ([]domain.Contact, error) {
 
 func (s Service) SendMessage(message domain.Message) error {
 	message.SentAt = time.Now()
+	message.MessageId = s.uuidGenerator.GenerateV4()
 	err := s.repository.RecordMessage(message)
 	switch err != nil {
 	case true:

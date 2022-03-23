@@ -70,3 +70,14 @@ func (s Service) GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, c
 
 	return messages, nil
 }
+
+// @TODO Implement logging procedure in repository decorator
+func (s Service) UpdateMessage(message domain.Message) error {
+	err := s.repository.UpdateMessage(message)
+	switch err != nil {
+	case true:
+		return errors.InternalError{}
+	}
+
+	return nil
+}

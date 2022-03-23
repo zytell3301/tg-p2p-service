@@ -12,4 +12,7 @@ type Repository interface {
 	RecordMessage(message domain.Message) error //@TODO flip message sides and reinsert into database
 	GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, contactId uuid.UUID) ([]domain.Message, error)
 	UpdateMessage(message domain.Message) error // @TODO make sure that both message replications will get updated
+
+	// Since we can't trust to user provided information, must fetch the message again from database
+	GetMessage(message domain.Message) (domain.Message, error)
 }

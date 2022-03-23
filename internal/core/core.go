@@ -29,14 +29,9 @@ func NewMessagesCore(config ServiceConfig, dependencies Dependencies) Service {
 }
 
 func (s Service) NewContact(contact domain.Contact) error {
-	id, err := s.uuidGenerator.GenerateV4()
+	id := s.uuidGenerator.GenerateV4()
 	contact.ContactId = id
-	switch err != nil {
-	case true:
-		// @TODO report error to central error recorder
-		return errors.InternalError{}
-	}
-	err = s.repository.NewContact(contact)
+	err := s.repository.NewContact(contact)
 	switch err != nil {
 	case true:
 		return errors.InternalError{}

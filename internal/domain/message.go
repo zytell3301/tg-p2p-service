@@ -6,11 +6,11 @@ import (
 )
 
 type Message struct {
-	LeftSide  uuid.UUID
-	ContactId uuid.UUID
-	RightSide uuid.UUID
+	LeftSide  *uuid.UUID
+	ContactId *uuid.UUID
+	RightSide *uuid.UUID
 	Text      string
 	Sender    bool
 	SentAt    time.Time
-	MessageId uuid.UUID
+	MessageId *uuid.UUID
 }

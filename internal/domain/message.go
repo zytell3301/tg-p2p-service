@@ -12,4 +12,5 @@ type Message struct {
 	Text      string
 	Sender    bool
 	SentAt    time.Time
+	MessageId uuid.UUID
 }

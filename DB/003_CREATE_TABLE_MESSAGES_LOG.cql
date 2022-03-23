@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS messages_log
     action     VARCHAR,   // The action that resulted into log like editing a message or deleting it
     log_time   TIMESTAMP, // Maybe several edits happen to a message that will result in several logs.
     // This field will distinguish does logs
-    PRIMARY KEY ( (left_side, contact_id), sent_at, log_time)
+    message_id UUID,
+    PRIMARY KEY ( (left_side, contact_id), sent_at, log_time, message_id)
 ) WITH CLUSTERING ORDER BY (sent_at DESC) AND
         CLUSTERING ORDER BY (log_time DESC);

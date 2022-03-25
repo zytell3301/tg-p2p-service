@@ -92,3 +92,14 @@ func (s Service) OneWayDelete(message domain.Message) error {
 
 	return s.repository.OneWayMessageDelete(message)
 }
+
+// Deletes message for both sides
+func (s Service) TwoWayDelete(message domain.Message) error {
+	message, err := s.repository.GetMessage(message)
+	switch err != nil {
+	case true:
+		return errors.InternalError{}
+	}
+
+	return s.repository.TwoWayMessageDelete(message)
+}

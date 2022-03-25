@@ -17,4 +17,5 @@ type Repository interface {
 	GetMessage(message domain.Message) (domain.Message, error)
 
 	OneWayMessageDelete(message domain.Message) error // @TODO handle logging operation in repository decorator
+	TwoWayMessageDelete(message domain.Message) error // @TODO handle logging operation in repository decorator
 }

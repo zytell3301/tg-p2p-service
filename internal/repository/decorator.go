@@ -8,13 +8,37 @@ import (
 	"time"
 )
 
+const (
+	newContactErrorMessage = "an error occurred while adding a new contact. Error message: %s"
+)
+
 type Decorator struct {
+	repository  Repository
 	reporter    ErrorReporter.Reporter
 	serviceInfo domain.ServiceInfo
 }
 
 func (d Decorator) NewContact(contact domain.Contact) error {
-	panic("implement me")
+	batch, err := d.repository.AddContact(contact)
+	switch err != nil {
+	case true:
+		d.reportError(newContactErrorMessage, err.Error())
+	}
+
+	// Swap contact sides
+	err = batch.AddContactToBatch(domain.Contact{
+		ContactId: contact.ContactId,
+		ContactSides: domain.ContactSides{
+			LeftSide:  contact.ContactSides.RightSide,
+			RightSide: contact.ContactSides.LeftSide,
+		},
+	})
+	switch err != nil {
+	case true:
+		d.reportError(newContactErrorMessage, err.Error())
+	}
+
+	return batch.ExecuteOperation()
 }
 
 func (d Decorator) GetContacts(uuid uuid.UUID) ([]domain.Contact, error) {

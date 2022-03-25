@@ -3,7 +3,7 @@ package repository
 import "tg-p2p-service/internal/domain"
 
 type Repository interface {
-	AddContact(contact domain.Contact) (error, AddContactBatch)
+	AddContact(contact domain.Contact) (AddContactBatch, error)
 }
 
 type AddContactBatch interface {

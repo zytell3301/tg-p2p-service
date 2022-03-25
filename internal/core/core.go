@@ -81,3 +81,14 @@ func (s Service) UpdateMessage(message domain.Message) error {
 
 	return nil
 }
+
+// Deletes the message only for the current user
+func (s Service) OneWayDelete(message domain.Message) error {
+	message, err := s.repository.GetMessage(message)
+	switch err != nil {
+	case true:
+		return errors.InternalError{}
+	}
+
+	return s.repository.OneWayMessageDelete(message)
+}

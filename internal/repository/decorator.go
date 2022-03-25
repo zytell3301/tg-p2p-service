@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	ErrorReporter "github.com/zytell3301/tg-error-reporter"
 	"tg-p2p-service/internal/domain"
@@ -44,10 +45,11 @@ func (d Decorator) TwoWayMessageDelete(message domain.Message) error {
 	panic("implement me")
 }
 
-func (d Decorator) reportError(message string) {
+// template obeys fmt.Sprintf rules and params will be replaced with placeholders
+func (d Decorator) reportError(template string, params ...string) {
 	d.reporter.Report(ErrorReporter.Error{
 		ServiceGroupId: d.serviceInfo.ServiceGroupId,
 		InstanceId:     d.serviceInfo.InstanceId,
-		Message:        message,
+		Message:        fmt.Sprintf(template, params),
 	})
 }

@@ -11,6 +11,7 @@ type Repository interface {
 	GetContacts(userId uuid.UUID) ([]domain.Contact, error)
 	RecordMessage(message domain.Message) (RecordMessageBatch, error)
 	GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, contactId uuid.UUID) ([]domain.Message, error)
+	UpdateMessage(message domain.Message) (UpdateMessageBatch, error)
 }
 
 type AddContactBatch interface {
@@ -31,6 +32,16 @@ type RecordMessageBatch interface {
 	// If batch feature is not available, you can separately run the queries
 	// but you will lose the database consistency on failure on any operation.
 	AddMessageToBatch(message domain.Message) error
+
+	// After adding queries to batch, you must call ExecuteOperation method
+	// or the changes will be lost
+	ExecuteOperation() error
+}
+
+type UpdateMessageBatch interface {
+	// This method will be used to add the update query for flipped message to batch.
+	// This method just adds a query to batch and won't execute it
+	AddUpdateToBatch(message domain.Message) error
 
 	// After adding queries to batch, you must call ExecuteOperation method
 	// or the changes will be lost

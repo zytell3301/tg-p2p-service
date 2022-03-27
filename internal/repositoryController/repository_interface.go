@@ -1,4 +1,4 @@
-package repository
+package repositoryController
 
 import "tg-p2p-service/internal/domain"
 

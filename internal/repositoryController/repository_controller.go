@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	newContactErrorMessage = "an error occurred while adding a new contact. Error message: %s"
+	newContactErrorMessage    = "an error occurred while adding a new contact. Error message: %s"
+	recordMessageErrorMessage = "an error occurred while recording a message. Error message: %s"
 )
 
 type Decorator struct {
@@ -53,7 +54,36 @@ func (d Decorator) GetContacts(userId uuid.UUID) ([]domain.Contact, error) {
 }
 
 func (d Decorator) RecordMessage(message domain.Message) error {
-	panic("implement me")
+	batch, err := d.repository.RecordMessage(message)
+	switch err != nil {
+	case true:
+		d.reportError(recordMessageErrorMessage, err.Error())
+		return err
+	}
+
+	// Swap message sides and reinsert it into batch
+	err = batch.AddMessageToBatch(domain.Message{
+		LeftSide:  message.RightSide,
+		ContactId: message.ContactId,
+		RightSide: message.LeftSide,
+		Text:      message.Text,
+		Sender:    flipSender(message.Sender),
+		SentAt:    message.SentAt,
+		MessageId: message.MessageId,
+	})
+	switch err != nil {
+	case true:
+		d.reportError(recordMessageErrorMessage, err.Error())
+		return err
+	}
+
+	err = batch.ExecuteOperation()
+	switch err != nil {
+	case true:
+		return err
+	}
+
+	return nil
 }
 
 func (d Decorator) GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, contactId uuid.UUID) ([]domain.Message, error) {
@@ -83,4 +113,13 @@ func (d Decorator) reportError(template string, params ...string) {
 		InstanceId:     d.serviceInfo.InstanceId,
 		Message:        fmt.Sprintf(template, params),
 	})
+}
+
+func flipSender(sender bool) bool {
+	switch sender {
+	case true:
+		return false
+	default:
+		return true
+	}
 }

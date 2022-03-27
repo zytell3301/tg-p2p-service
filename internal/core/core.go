@@ -11,6 +11,7 @@ import (
 type Service struct {
 	repository    Repository
 	uuidGenerator uuid_generator.Generator
+	messageLogger MessageLogger
 }
 
 type ServiceConfig struct {
@@ -19,12 +20,14 @@ type ServiceConfig struct {
 type Dependencies struct {
 	Repository    Repository
 	UuidGenerator uuid_generator.Generator
+	MessageLogger MessageLogger
 }
 
 func NewMessagesCore(config ServiceConfig, dependencies Dependencies) Service {
 	return Service{
 		repository:    dependencies.Repository,
 		uuidGenerator: dependencies.UuidGenerator,
+		messageLogger: dependencies.MessageLogger,
 	}
 }
 

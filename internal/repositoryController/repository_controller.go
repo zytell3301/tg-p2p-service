@@ -48,8 +48,8 @@ func (d Decorator) NewContact(contact domain.Contact) error {
 	return nil
 }
 
-func (d Decorator) GetContacts(uuid uuid.UUID) ([]domain.Contact, error) {
-	panic("implement me")
+func (d Decorator) GetContacts(userId uuid.UUID) ([]domain.Contact, error) {
+	return d.repository.GetContacts(userId)
 }
 
 func (d Decorator) RecordMessage(message domain.Message) error {

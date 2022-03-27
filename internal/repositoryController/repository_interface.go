@@ -12,6 +12,7 @@ type Repository interface {
 	RecordMessage(message domain.Message) (RecordMessageBatch, error)
 	GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, contactId uuid.UUID) ([]domain.Message, error)
 	UpdateMessage(message domain.Message) (UpdateMessageBatch, error)
+	GetMessage(message domain.Message) (domain.Message, error)
 }
 
 type AddContactBatch interface {

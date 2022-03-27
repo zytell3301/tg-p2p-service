@@ -105,7 +105,31 @@ func (d Decorator) GetMessages(from time.Time, to time.Time, leftSide uuid.UUID,
 }
 
 func (d Decorator) UpdateMessage(message domain.Message) error {
-	panic("implement me")
+	batch, err := d.repository.UpdateMessage(message)
+	switch err != nil {
+	case true:
+		return err
+	}
+	err = batch.AddUpdateToBatch(domain.Message{
+		LeftSide:  message.RightSide,
+		ContactId: message.ContactId,
+		RightSide: message.LeftSide,
+		Text:      message.Text,
+		Sender:    flipSender(message.Sender),
+		SentAt:    message.SentAt,
+		MessageId: message.MessageId,
+	})
+	switch err != nil {
+	case true:
+		return err
+	}
+	err = batch.ExecuteOperation()
+	switch err != nil {
+	case true:
+		return err
+	}
+
+	return nil
 }
 
 func (d Decorator) GetMessage(message domain.Message) (domain.Message, error) {

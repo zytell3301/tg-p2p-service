@@ -1,9 +1,11 @@
 package repositoryController
 
 import (
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	ErrorReporter "github.com/zytell3301/tg-error-reporter"
+	errors2 "github.com/zytell3301/tg-globals/errors"
 	"tg-p2p-service/internal/domain"
 	"time"
 )
@@ -87,7 +89,19 @@ func (d Decorator) RecordMessage(message domain.Message) error {
 }
 
 func (d Decorator) GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, contactId uuid.UUID) ([]domain.Message, error) {
-	panic("implement me")
+	messages, err := d.repository.GetMessages(from, to, leftSide, contactId)
+	switch err != nil {
+	case true:
+		switch errors.As(err, &errors2.EntityNotFound{}) {
+		case true:
+			// In this case the error is EntityNotFound. So we let the caller
+			// find out that query resulted in empty response
+			return nil, err
+		default:
+			return nil, errors2.InternalError{}
+		}
+	}
+	return messages, nil
 }
 
 func (d Decorator) UpdateMessage(message domain.Message) error {

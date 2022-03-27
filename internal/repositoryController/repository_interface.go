@@ -3,12 +3,14 @@ package repositoryController
 import (
 	"github.com/google/uuid"
 	"tg-p2p-service/internal/domain"
+	"time"
 )
 
 type Repository interface {
 	AddContact(contact domain.Contact) (AddContactBatch, error)
 	GetContacts(userId uuid.UUID) ([]domain.Contact, error)
 	RecordMessage(message domain.Message) (RecordMessageBatch, error)
+	GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, contactId uuid.UUID) ([]domain.Message, error)
 }
 
 type AddContactBatch interface {

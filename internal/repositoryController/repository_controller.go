@@ -16,6 +16,7 @@ const (
 	getMessageRangeErrorMessage = "an error occurred while getting a message range. Error message: %s"
 	getMessageErrorMessage      = "an error occurred while getting a message. Error message: %s"
 	oneWayMessageDelete         = "an error occurred while one way deleting a message. Error message: %s"
+	twoWayMessageDelete         = "an error occurred while two way deleting a message. Error message: %s"
 )
 
 type Decorator struct {
@@ -175,7 +176,38 @@ func (d Decorator) oneWayMessageDelete(message domain.Message) (DeleteMessageBat
 }
 
 func (d Decorator) TwoWayMessageDelete(message domain.Message) error {
-	panic("implement me")
+	batch, err := d.oneWayMessageDelete(message)
+	switch err != nil {
+	case true:
+		d.reportError(twoWayMessageDelete, err.Error())
+		return errors2.InternalError{}
+	}
+
+	// Since this is two way delete operation, message must be deleted for both sides.
+	// So we flip the senders
+	err = batch.AddDeleteToBatch(domain.Message{
+		LeftSide:  message.RightSide,
+		ContactId: message.ContactId,
+		RightSide: message.LeftSide,
+		Text:      message.Text,
+		Sender:    flipSender(message.Sender),
+		SentAt:    message.SentAt,
+		MessageId: message.MessageId,
+	})
+	switch err != nil {
+	case true:
+		d.reportError(twoWayMessageDelete, err.Error())
+		return errors2.InternalError{}
+	}
+
+	err = batch.ExecuteOperation()
+	switch err != nil {
+	case true:
+		d.reportError(twoWayMessageDelete, err.Error())
+		return errors2.InternalError{}
+	}
+
+	return nil
 }
 
 // template obeys fmt.Sprintf rules and params will be replaced with placeholders

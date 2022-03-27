@@ -13,7 +13,7 @@ import (
 const (
 	newContactErrorMessage    = "an error occurred while adding a new contact. Error message: %s"
 	recordMessageErrorMessage = "an error occurred while recording a message. Error message: %s"
-	getMessgesErrorMessage    = "an error occurred while getting a message range. Error message: %s"
+	getMessagesErrorMessage   = "an error occurred while getting a message range. Error message: %s"
 )
 
 type Decorator struct {
@@ -99,7 +99,7 @@ func (d Decorator) GetMessages(from time.Time, to time.Time, leftSide uuid.UUID,
 			// find out that query resulted in empty response
 			return nil, err
 		default:
-			d.reportError(getMessgesErrorMessage, err.Error())
+			d.reportError(getMessagesErrorMessage, err.Error())
 			return nil, errors2.InternalError{}
 		}
 	}

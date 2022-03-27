@@ -15,6 +15,7 @@ const (
 	recordMessageErrorMessage   = "an error occurred while recording a message. Error message: %s"
 	getMessageRangeErrorMessage = "an error occurred while getting a message range. Error message: %s"
 	getMessageErrorMessage      = "an error occurred while getting a message. Error message: %s"
+	oneWayMessgeDelete          = "an error occurred while one way deleting a message. Error message: %s"
 )
 
 type Decorator struct {
@@ -152,7 +153,25 @@ func (d Decorator) GetMessage(message domain.Message) (domain.Message, error) {
 }
 
 func (d Decorator) OneWayMessageDelete(message domain.Message) error {
-	panic("implement me")
+	batch, err := d.oneWayMessageDelete(message)
+	switch err != nil {
+	case true:
+		d.reportError(oneWayMessgeDelete, err.Error())
+		return errors2.InternalError{}
+	}
+	err = batch.ExecuteOperation()
+	switch err != nil {
+	case true:
+		d.reportError(oneWayMessgeDelete, err.Error())
+		return errors2.InternalError{}
+	}
+
+	return nil
+}
+
+func (d Decorator) oneWayMessageDelete(message domain.Message) (DeleteMessageBatch, error) {
+	batch, err := d.repository.DeleteMessage(message)
+	return batch, err
 }
 
 func (d Decorator) TwoWayMessageDelete(message domain.Message) error {

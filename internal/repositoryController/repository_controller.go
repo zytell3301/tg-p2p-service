@@ -38,7 +38,14 @@ func (d Decorator) NewContact(contact domain.Contact) error {
 		d.reportError(newContactErrorMessage, err.Error())
 	}
 
-	return batch.ExecuteOperation()
+	err = batch.ExecuteOperation()
+	switch err != nil {
+	case true:
+		d.reportError(newContactErrorMessage, err.Error())
+		return err
+	}
+
+	return nil
 }
 
 func (d Decorator) GetContacts(uuid uuid.UUID) ([]domain.Contact, error) {

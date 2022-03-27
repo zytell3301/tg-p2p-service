@@ -76,7 +76,19 @@ func (s Service) GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, c
 
 // @TODO Implement logging procedure in repository decorator
 func (s Service) UpdateMessage(message domain.Message) error {
-	err := s.repository.UpdateMessage(message)
+	originalMessage, err := s.repository.GetMessage(message)
+	switch err != nil {
+	case true:
+		return errors.InternalError{}
+	}
+
+	err = s.messageLogger.LogEditedMessage(originalMessage)
+	switch err != nil {
+	case true:
+		return errors.InternalError{}
+	}
+
+	err = s.repository.UpdateMessage(message)
 	switch err != nil {
 	case true:
 		return errors.InternalError{}
@@ -93,12 +105,24 @@ func (s Service) OneWayDelete(message domain.Message) error {
 		return errors.InternalError{}
 	}
 
+	err = s.messageLogger.LogOneWayDeletedMessage(message)
+	switch err != nil {
+	case true:
+		return errors.InternalError{}
+	}
+
 	return s.repository.OneWayMessageDelete(message)
 }
 
 // Deletes message for both sides
 func (s Service) TwoWayDelete(message domain.Message) error {
 	message, err := s.repository.GetMessage(message)
+	switch err != nil {
+	case true:
+		return errors.InternalError{}
+	}
+
+	err = s.messageLogger.LogTwoWayDeletedMessage(message)
 	switch err != nil {
 	case true:
 		return errors.InternalError{}

@@ -14,6 +14,7 @@ const (
 	newContactErrorMessage    = "an error occurred while adding a new contact. Error message: %s"
 	recordMessageErrorMessage = "an error occurred while recording a message. Error message: %s"
 	getMessagesErrorMessage   = "an error occurred while getting a message range. Error message: %s"
+	getMessageErrorMessage    = "an error occurred while getting a message. Error message: %s"
 )
 
 type Decorator struct {
@@ -135,7 +136,19 @@ func (d Decorator) UpdateMessage(message domain.Message) error {
 }
 
 func (d Decorator) GetMessage(message domain.Message) (domain.Message, error) {
-	panic("implement me")
+	message, err := d.repository.GetMessage(message)
+	switch err != nil {
+	case true:
+		switch errors.As(err, &errors2.EntityNotFound{}) {
+		case true:
+			// Let the caller know that query resulted in empty response
+			return domain.Message{}, err
+		default:
+			d.reportError(getMessageErrorMessage, err.Error())
+			return domain.Message{}, err
+		}
+	}
+	return message, nil
 }
 
 func (d Decorator) OneWayMessageDelete(message domain.Message) error {

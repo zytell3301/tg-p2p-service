@@ -13,6 +13,7 @@ type Repository interface {
 	GetMessages(from time.Time, to time.Time, leftSide uuid.UUID, contactId uuid.UUID) ([]domain.Message, error)
 	UpdateMessage(message domain.Message) (UpdateMessageBatch, error)
 	GetMessage(message domain.Message) (domain.Message, error)
+	DeleteMessage(message domain.Message) (DeleteMessageBatch, error)
 }
 
 type AddContactBatch interface {
@@ -43,6 +44,16 @@ type UpdateMessageBatch interface {
 	// This method will be used to add the update query for flipped message to batch.
 	// This method just adds a query to batch and won't execute it
 	AddUpdateToBatch(message domain.Message) error
+
+	// After adding queries to batch, you must call ExecuteOperation method
+	// or the changes will be lost
+	ExecuteOperation() error
+}
+
+type DeleteMessageBatch interface {
+	// Adds delete operation to batch.
+	// This method just adds a query to batch and won't execute it.
+	AddDeleteToBatch(message domain.Message) error
 
 	// After adding queries to batch, you must call ExecuteOperation method
 	// or the changes will be lost
